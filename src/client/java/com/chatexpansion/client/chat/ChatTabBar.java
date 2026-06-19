@@ -10,11 +10,11 @@ public class ChatTabBar {
 	private static final int TAB_HEIGHT = 12;
 	private static final int TAB_PADDING = 4;
 	private static final int TAB_GAP = 2;
-	private static final int ACTIVE_TAB_COLOR = 0xFF555555;
-	private static final int INACTIVE_TAB_COLOR = 0xFF333333;
+	private static final int ACTIVE_TAB_COLOR = 0xBB555555;
+	private static final int INACTIVE_TAB_COLOR = 0x99333333;
 	private static final int ACTIVE_TEXT_COLOR = 0xFFFFFFFF;
 	private static final int INACTIVE_TEXT_COLOR = 0xFFAAAAAA;
-	private static final int BG_COLOR = 0xC0000000;
+	private static final int BG_COLOR = 0x90000000;
 
 	private final ChatTabManager tabManager;
 

@@ -55,7 +55,7 @@ public class ModConfig {
 			"(?i).*\\[PM\\].*",
 			"(?i).*\\[MSG\\].*"
 		)));
-		config.tabs.add(new TabConfig("guild", "Guild", List.of(
+		config.tabs.add(new TabConfig("guild", "Town", List.of(
 			"(?i)^MT.*",
 			"(?i).*\\[Guild\\].*",
 			"(?i).*\\[City\\].*",
@@ -101,6 +101,11 @@ public class ModConfig {
 	private static void migrateTabs(ModConfig config) {
 		boolean changed = false;
 		for (TabConfig tab : config.tabs) {
+			if ("guild".equals(tab.id) && "Guild".equals(tab.displayName)) {
+				tab.displayName = "Town";
+				changed = true;
+				ChatExpansion.LOGGER.info("Renamed Guild tab to Town");
+			}
 			if ("coreprotect".equals(tab.id)) {
 				if (tab.patterns != null && tab.patterns.size() <= 2) {
 					tab.patterns = List.of(
