@@ -36,7 +36,7 @@ public class ChatTabManager {
 		ModConfig config = ModConfig.load();
 
 		for (ModConfig.TabConfig tabConfig : config.tabs) {
-			ChatTab tab = new ChatTab(tabConfig.id, tabConfig.displayName, tabConfig.patterns);
+			ChatTab tab = new ChatTab(tabConfig.id, tabConfig.displayName, tabConfig.patterns, tabConfig.stealsFromMain);
 			tabs.add(tab);
 		}
 
@@ -91,7 +91,16 @@ public class ChatTabManager {
 		ChatTab active = getActiveTab();
 
 		if (active == null || active.getId().equals("main")) {
-			chat.setVisibleMessageFilter(msg -> true);
+			chat.setVisibleMessageFilter(guiMessage -> {
+				// Exclude messages that belong to stealsFromMain tabs
+				String text = guiMessage.content().getString();
+				for (ChatTab t : tabs) {
+					if (t.isStealsFromMain() && t.matches(text)) {
+						return false;
+					}
+				}
+				return true;
+			});
 		} else {
 			chat.setVisibleMessageFilter(guiMessage -> active.matches(guiMessage.content().getString()));
 		}
@@ -107,11 +116,23 @@ public class ChatTabManager {
 
 		ChatTab.ChatMessage message = new ChatTab.ChatMessage(plainText, components, time);
 
-		// Build a string of matched tab names
+		// Check if any stealsFromMain tab matches this message
+		boolean stolen = false;
+		for (ChatTab tab : tabs) {
+			if (tab.isStealsFromMain() && tab.matches(plainText)) {
+				stolen = true;
+				break;
+			}
+		}
+
+		// Route to matching tabs
 		StringBuilder matches = new StringBuilder();
 		for (ChatTab tab : tabs) {
 			if (tab.matches(plainText)) {
-				tab.addMessage(message);
+				// Skip main if a stealsFromMain tab claimed this message
+				if (!tab.getId().equals("main") || !stolen) {
+					tab.addMessage(message);
+				}
 				if (!matches.isEmpty()) matches.append(", ");
 				matches.append(tab.getId());
 			}

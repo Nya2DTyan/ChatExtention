@@ -26,6 +26,7 @@ public class ModConfig {
 		public String displayName;
 		public List<String> patterns;
 		public boolean visible = true;
+		public boolean stealsFromMain;
 
 		public TabConfig() {}
 
@@ -62,10 +63,16 @@ public class ModConfig {
 			"(?i).*\\[G\\]\\s.*",
 			"(?i).*\\[C\\]\\s.*"
 		)));
-		config.tabs.add(new TabConfig("coreprotect", "CoreProtect", List.of(
+		TabConfig coreprotect = new TabConfig("coreprotect", "CoreProtect", List.of(
 			"(?i).*\\[CoreProtect\\].*",
-			"(?i).*CoreProtect.*"
-		)));
+			"(?i).*CoreProtect.*",
+			"(?i).*\\d+\\.\\d+/(h|m|d).*ago.*",
+			"(?i).*\\(x-?\\d+/y-?\\d+/z-?\\d+.*",
+			"(?i).*Page.*\\d+/\\d+.*",
+			"(?i).*-----.*"
+		));
+		coreprotect.stealsFromMain = true;
+		config.tabs.add(coreprotect);
 
 		return config;
 	}
@@ -75,6 +82,7 @@ public class ModConfig {
 			try {
 				String json = Files.readString(CONFIG_PATH);
 				instance = GSON.fromJson(json, ModConfig.class);
+				migrateTabs(instance);
 				ChatExpansion.LOGGER.info("Loaded ChatExpansion config");
 				return instance;
 			} catch (IOException e) {
@@ -85,6 +93,37 @@ public class ModConfig {
 		instance = createDefault();
 		save();
 		return instance;
+	}
+
+	/**
+	 * Migrate tab patterns from older config versions.
+	 */
+	private static void migrateTabs(ModConfig config) {
+		boolean changed = false;
+		for (TabConfig tab : config.tabs) {
+			if ("coreprotect".equals(tab.id)) {
+				if (tab.patterns != null && tab.patterns.size() <= 2) {
+					tab.patterns = List.of(
+						"(?i).*\\[CoreProtect\\].*",
+						"(?i).*CoreProtect.*",
+						"(?i).*\\d+\\.\\d+/(h|m|d).*ago.*",
+						"(?i).*\\(x-?\\d+/y-?\\d+/z-?\\d+.*",
+						"(?i).*Page.*\\d+/\\d+.*",
+						"(?i).*-----.*"
+					);
+					changed = true;
+					ChatExpansion.LOGGER.info("Migrated CoreProtect patterns to v2");
+				}
+				if (!tab.stealsFromMain) {
+					tab.stealsFromMain = true;
+					changed = true;
+					ChatExpansion.LOGGER.info("Set CoreProtect stealsFromMain=true");
+				}
+			}
+		}
+		if (changed) {
+			save();
+		}
 	}
 
 	public static void save() {

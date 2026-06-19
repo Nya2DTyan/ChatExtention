@@ -11,10 +11,16 @@ public class ChatTab {
 	private final List<ChatMessage> messages = new ArrayList<>();
 	private boolean detached;
 	private int scrollOffset;
+	private boolean stealsFromMain;
 
 	public ChatTab(String id, String displayName, List<String> patterns) {
+		this(id, displayName, patterns, false);
+	}
+
+	public ChatTab(String id, String displayName, List<String> patterns, boolean stealsFromMain) {
 		this.id = id;
 		this.displayName = displayName;
+		this.stealsFromMain = stealsFromMain;
 		this.filterPatterns = new ArrayList<>();
 		for (String p : patterns) {
 			try {
@@ -39,6 +45,10 @@ public class ChatTab {
 
 	public boolean isDetached() {
 		return detached;
+	}
+
+	public boolean isStealsFromMain() {
+		return stealsFromMain;
 	}
 
 	public void setDetached(boolean detached) {
