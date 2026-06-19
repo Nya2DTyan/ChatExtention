@@ -26,17 +26,13 @@ public abstract class ChatScreenMixin {
 	private int chatexpansion$tabBarY() {
 		Minecraft mc = Minecraft.getInstance();
 		int screenHeight = mc.getWindow().getGuiScaledHeight();
-		int screenWidth = mc.getWindow().getGuiScaledWidth();
-		ChatComponent chat = mc.gui.getChat();
-		int lines = chat.getLinesPerPage();
-		int lineH = mc.font.lineHeight + 1;
-		int chatPixels = Math.min(lines * lineH, screenHeight / 2);
-		int chatTop = screenHeight - INPUT_BOX_HEIGHT - 4 - chatPixels;
-		return chatTop - 16;
+		return screenHeight - INPUT_BOX_HEIGHT - 2;
 	}
 
 	private int chatexpansion$tabBarWidth() {
-		return Minecraft.getInstance().getWindow().getGuiScaledWidth() - 4;
+		Minecraft mc = Minecraft.getInstance();
+		ChatComponent chat = mc.gui.getChat();
+		return ((ChatComponentAccessor) chat).chatexpansion$getWidth();
 	}
 
 	@Inject(method = "extractRenderState", at = @At("TAIL"))
