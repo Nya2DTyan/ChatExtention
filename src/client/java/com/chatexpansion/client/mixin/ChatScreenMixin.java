@@ -4,7 +4,6 @@ import com.chatexpansion.client.chat.ChatTabManager;
 import com.chatexpansion.client.chat.FloatingChatWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -31,8 +30,9 @@ public abstract class ChatScreenMixin {
 
 	private int chatexpansion$tabBarWidth() {
 		Minecraft mc = Minecraft.getInstance();
-		ChatComponent chat = mc.gui.getChat();
-		return ((ChatComponentAccessor) chat).chatexpansion$getWidth();
+		// Chat width from options slider (0.0–1.0 → 40–320px)
+		double scale = mc.options.chatWidth().get();
+		return (int) (scale * 280.0 + 40.0);
 	}
 
 	@Inject(method = "extractRenderState", at = @At("TAIL"))
