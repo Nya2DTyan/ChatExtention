@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "chatexpansion",
+	"version": "${version}",
+	"name": "ChatExpansion",
+	"description": "Tabbed chat with detachable floating windows for Minecraft servers",
+	"authors": [
+		"ChatExpansion"
+	],
+	"contact": {
+		"homepage": "https://github.com/chatexpansion/chatexpansion"
+	},
+	"license": "MIT",
+	"icon": "assets/chatexpansion/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.chatexpansion.ChatExpansion"
+		],
+		"client": [
+			"com.chatexpansion.client.ChatExpansionClient"
+		]
+	},
+	"mixins": [
+		"chatexpansion.mixins.json",
+		{
+			"config": "chatexpansion.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.1.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
