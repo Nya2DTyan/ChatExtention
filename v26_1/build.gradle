@@ -1,0 +1,50 @@
+buildscript {
+	repositories {
+		maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+		mavenCentral()
+		gradlePluginPortal()
+	}
+	dependencies {
+		classpath "net.fabricmc:fabric-loom:${rootProject.loom_version}"
+	}
+}
+
+apply plugin: 'net.fabricmc.fabric-loom'
+
+loom {
+	splitEnvironmentSourceSets()
+
+	mods {
+		"chatexpansion" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+}
+
+dependencies {
+	implementation project(':common')
+
+	minecraft "com.mojang:minecraft:${rootProject.minecraft_version_26_1}"
+	implementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version_26_1}"
+}
+
+processResources {
+	def version = rootProject.mod_version
+	inputs.property "version", version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": version
+	}
+}
+
+base {
+	archivesName = "chatexpansion"
+}
+
+jar {
+	from("${rootProject.projectDir}/LICENSE") {
+		rename { "${it}_${archivesName}" }
+	}
+}

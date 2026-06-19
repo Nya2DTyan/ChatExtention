@@ -1,7 +1,8 @@
 package com.chatexpansion.client.chat;
 
 import com.chatexpansion.ChatExpansion;
-import com.chatexpansion.client.config.ModConfig;
+import com.chatexpansion.chat.ChatTab;
+import com.chatexpansion.config.ModConfig;
 import net.minecraft.client.Minecraft;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class ChatTabManager {
 	public void init() {
 		tabs.clear();
 		tabBar = new ChatTabBar(this);
-		ModConfig config = ModConfig.load();
+		ModConfig config = ModConfig.get();
 
 		for (ModConfig.TabConfig tabConfig : config.tabs) {
 			ChatTab tab = new ChatTab(tabConfig.id, tabConfig.displayName, tabConfig.patterns, tabConfig.stealsFromMain);

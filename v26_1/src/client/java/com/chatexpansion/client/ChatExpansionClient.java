@@ -2,12 +2,15 @@ package com.chatexpansion.client;
 
 import com.chatexpansion.ChatExpansion;
 import com.chatexpansion.client.chat.ChatTabManager;
-import com.chatexpansion.client.config.ModConfig;
+import com.chatexpansion.config.ModConfig;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
+
+import java.nio.file.Path;
 
 public class ChatExpansionClient implements ClientModInitializer {
 
@@ -21,7 +24,8 @@ public class ChatExpansionClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		ModConfig.load();
+		Path configPath = FabricLoader.getInstance().getConfigDir().resolve("chatexpansion.json");
+		ModConfig.load(configPath);
 		ChatTabManager.getInstance().init();
 
 		toggleTab1 = KeyMappingHelper.registerKeyMapping(new KeyMapping(

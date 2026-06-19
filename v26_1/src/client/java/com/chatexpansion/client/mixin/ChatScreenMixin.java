@@ -30,7 +30,6 @@ public abstract class ChatScreenMixin {
 
 	private int chatexpansion$tabBarWidth() {
 		Minecraft mc = Minecraft.getInstance();
-		// Chat width from options slider (0.0–1.0 → 40–320px)
 		double scale = mc.options.chatWidth().get();
 		return (int) (scale * 280.0 + 40.0);
 	}

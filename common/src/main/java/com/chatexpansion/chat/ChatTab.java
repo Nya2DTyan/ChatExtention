@@ -1,4 +1,4 @@
-package com.chatexpansion.client.chat;
+package com.chatexpansion.chat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,12 +47,12 @@ public class ChatTab {
 		return detached;
 	}
 
-	public boolean isStealsFromMain() {
-		return stealsFromMain;
-	}
-
 	public void setDetached(boolean detached) {
 		this.detached = detached;
+	}
+
+	public boolean isStealsFromMain() {
+		return stealsFromMain;
 	}
 
 	public int getScrollOffset() {

@@ -10,3 +10,6 @@ pluginManagement {
 }
 
 rootProject.name = 'chatexpansion'
+
+include 'common'
+include 'v26_1'

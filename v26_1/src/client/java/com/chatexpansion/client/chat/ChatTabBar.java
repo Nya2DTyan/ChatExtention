@@ -1,5 +1,6 @@
 package com.chatexpansion.client.chat;
 
+import com.chatexpansion.chat.ChatTab;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

@@ -1,9 +1,9 @@
-package com.chatexpansion.client.config;
+package com.chatexpansion.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.chatexpansion.ChatExpansion;
-import net.fabricmc.loader.api.FabricLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,8 +13,9 @@ import java.util.List;
 
 public class ModConfig {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-	private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("chatexpansion.json");
+	private static final Logger LOGGER = LoggerFactory.getLogger("chatexpansion");
 
+	private static Path configPath;
 	private static ModConfig instance;
 
 	public List<TabConfig> tabs = new ArrayList<>();
@@ -77,16 +78,17 @@ public class ModConfig {
 		return config;
 	}
 
-	public static ModConfig load() {
-		if (Files.exists(CONFIG_PATH)) {
+	public static ModConfig load(Path path) {
+		configPath = path;
+		if (Files.exists(path)) {
 			try {
-				String json = Files.readString(CONFIG_PATH);
+				String json = Files.readString(path);
 				instance = GSON.fromJson(json, ModConfig.class);
 				migrateTabs(instance);
-				ChatExpansion.LOGGER.info("Loaded ChatExpansion config");
+				LOGGER.info("Loaded ChatExpansion config");
 				return instance;
 			} catch (IOException e) {
-				ChatExpansion.LOGGER.error("Failed to load config, using defaults", e);
+				LOGGER.error("Failed to load config, using defaults", e);
 			}
 		}
 
@@ -95,16 +97,13 @@ public class ModConfig {
 		return instance;
 	}
 
-	/**
-	 * Migrate tab patterns from older config versions.
-	 */
 	private static void migrateTabs(ModConfig config) {
 		boolean changed = false;
 		for (TabConfig tab : config.tabs) {
 			if ("guild".equals(tab.id) && "Guild".equals(tab.displayName)) {
 				tab.displayName = "Town";
 				changed = true;
-				ChatExpansion.LOGGER.info("Renamed Guild tab to Town");
+				LOGGER.info("Renamed Guild tab to Town");
 			}
 			if ("coreprotect".equals(tab.id)) {
 				if (tab.patterns != null && tab.patterns.size() <= 2) {
@@ -117,33 +116,33 @@ public class ModConfig {
 						"(?i).*-----.*"
 					);
 					changed = true;
-					ChatExpansion.LOGGER.info("Migrated CoreProtect patterns to v2");
+					LOGGER.info("Migrated CoreProtect patterns to v2");
 				}
 				if (!tab.stealsFromMain) {
 					tab.stealsFromMain = true;
 					changed = true;
-					ChatExpansion.LOGGER.info("Set CoreProtect stealsFromMain=true");
+					LOGGER.info("Set CoreProtect stealsFromMain=true");
 				}
 			}
 		}
-		if (changed) {
+		if (changed && configPath != null) {
 			save();
 		}
 	}
 
 	public static void save() {
-		if (instance == null) return;
+		if (instance == null || configPath == null) return;
 		try {
-			Files.createDirectories(CONFIG_PATH.getParent());
-			Files.writeString(CONFIG_PATH, GSON.toJson(instance));
+			Files.createDirectories(configPath.getParent());
+			Files.writeString(configPath, GSON.toJson(instance));
 		} catch (IOException e) {
-			ChatExpansion.LOGGER.error("Failed to save config", e);
+			LOGGER.error("Failed to save config", e);
 		}
 	}
 
 	public static ModConfig get() {
 		if (instance == null) {
-			return load();
+			throw new IllegalStateException("ModConfig not loaded yet. Call ModConfig.load(path) first.");
 		}
 		return instance;
 	}
